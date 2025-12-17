@@ -20,34 +20,28 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-          
-
 
       - name: Log in to Amazon ECR
         run: |
-          aws ecr get-login-password --region ap-south-1 | \
-          docker login --username AWS --password-stdin 371952811305.dkr.ecr.ap-south-1.amazonaws.com
+          aws ecr get-login-password --region us-east-2 | \
+          docker login --username AWS --password-stdin 311420043511.dkr.ecr.us-east-2.amazonaws.com
 
       - name: Build Docker image
         run: |
-          IMAGE_URI=371952811305.dkr.ecr.ap-south-1.amazonaws.com/b12:${{ github.sha }}
+          IMAGE_URI=311420043511.dkr.ecr.us-east-2.amazonaws.com/b12:${{ github.sha }}
           docker build -t $IMAGE_URI .
 
-      - name: Push this image to Amazon ECR 
+      - name: Push image to Amazon ECR
         run: |
-          IMAGE_URI=371952811305.dkr.ecr.ap-south-1.amazonaws.com/b12:${{ github.sha }}
+          IMAGE_URI=311420043511.dkr.ecr.us-east-2.amazonaws.com/b12:${{ github.sha }}
           docker push $IMAGE_URI
 
       - name: Verify image in ECR
         run: |
-          echo "Checking if image exists in ECR..."
           aws ecr describe-images \
             --repository-name b12 \
             --image-ids imageTag=${{ github.sha }} \
-            --region ap-south-1 \
-          && echo "✅ Image exists in ECR" \
-          || (echo "❌ Image not found in ECR" && exit 1)
-
+            --region us-east-2
 
   update-gitops:
     runs-on: ubuntu-latest
@@ -64,16 +58,12 @@ jobs:
       - name: Update deployment.yaml with new ECR image
         run: |
           FILE=deployment.yml
-          NEW_IMAGE=371952811305.dkr.ecr.ap-south-1.amazonaws.com/b12:${{ github.sha }}
-          echo "Updating image to $NEW_IMAGE in $FILE"
+          NEW_IMAGE=311420043511.dkr.ecr.us-east-2.amazonaws.com/b12:${{ github.sha }}
           sed -i "s|image: .*|image: $NEW_IMAGE|" "$FILE"
-          echo "Updated content:"
-          cat "$FILE"
 
-      - name: Commit and push changes 
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git commit -am "🔄 Update ECR image to ${{ github.sha }}"
+          git commit -am "🔄 Update image to ${{ github.sha }}"
           git push origin main
-
