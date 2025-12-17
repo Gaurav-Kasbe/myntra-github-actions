@@ -19,7 +19,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region: us-east-2
           
 
 
@@ -33,7 +33,7 @@ jobs:
           IMAGE_URI=371952811305.dkr.ecr.ap-south-1.amazonaws.com/b12:${{ github.sha }}
           docker build -t $IMAGE_URI .
 
-      - name: Push image to Amazon ECR 
+      - name: Push this image to Amazon ECR 
         run: |
           IMAGE_URI=371952811305.dkr.ecr.ap-south-1.amazonaws.com/b12:${{ github.sha }}
           docker push $IMAGE_URI
