@@ -51,7 +51,7 @@ jobs:
       - name: Checkout GitOps repo
         uses: actions/checkout@v3
         with:
-          repository: Cloud-with-Prashant/gitopsinfra
+          repository: Gaurav-Kasbe/gitopsinfra
           token: ${{ secrets.GITOPS_TOKEN }}
           ref: main
 
